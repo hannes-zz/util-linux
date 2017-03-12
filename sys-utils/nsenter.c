@@ -60,6 +60,7 @@ static struct namespace_file {
 	{ .nstype = CLONE_NEWIPC,   .name = "ns/ipc",  .fd = -1 },
 	{ .nstype = CLONE_NEWUTS,   .name = "ns/uts",  .fd = -1 },
 	{ .nstype = CLONE_NEWNET,   .name = "ns/net",  .fd = -1 },
+	{ .nstype = CLONE_NEWAFNET, .name = "ns/afnet", .fd = -1 },
 	{ .nstype = CLONE_NEWPID,   .name = "ns/pid",  .fd = -1 },
 	{ .nstype = CLONE_NEWNS,    .name = "ns/mnt",  .fd = -1 },
 	{ .nstype = 0, .name = NULL, .fd = -1 }
@@ -206,7 +207,8 @@ static void continue_as_child(void)
 int main(int argc, char *argv[])
 {
 	enum {
-		OPT_PRESERVE_CRED = CHAR_MAX + 1
+		OPT_PRESERVE_CRED = CHAR_MAX + 1,
+		OPT_AFNET,
 	};
 	static const struct option longopts[] = {
 		{ "all", no_argument, NULL, 'a' },
@@ -217,6 +219,7 @@ int main(int argc, char *argv[])
 		{ "uts", optional_argument, NULL, 'u' },
 		{ "ipc", optional_argument, NULL, 'i' },
 		{ "net", optional_argument, NULL, 'n' },
+		{ "afnet", optional_argument, NULL, OPT_AFNET },
 		{ "pid", optional_argument, NULL, 'p' },
 		{ "user", optional_argument, NULL, 'U' },
 		{ "cgroup", optional_argument, NULL, 'C' },
@@ -287,6 +290,12 @@ int main(int argc, char *argv[])
 				open_namespace_fd(CLONE_NEWNET, optarg);
 			else
 				namespaces |= CLONE_NEWNET;
+			break;
+		case OPT_AFNET:
+			if (optarg)
+				open_namespace_fd(CLONE_NEWAFNET, optarg);
+			else
+				namespaces |= CLONE_NEWAFNET;
 			break;
 		case 'p':
 			if (optarg)
