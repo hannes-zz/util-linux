@@ -58,6 +58,7 @@ static struct namespace_file {
 	{ .type = CLONE_NEWIPC,   .name = "ns/ipc"  },
 	{ .type = CLONE_NEWUTS,   .name = "ns/uts"  },
 	{ .type = CLONE_NEWNET,   .name = "ns/net"  },
+	{ .type = CLONE_NEWAFNET, .name = "ns/afnet" },
 	{ .type = CLONE_NEWPID,   .name = "ns/pid"  },
 	{ .type = CLONE_NEWNS,    .name = "ns/mnt"  },
 	{ .name = NULL }
@@ -254,6 +255,7 @@ static void usage(int status)
 	fputs(_(" -u, --uts[=<file>]        unshare UTS namespace (hostname etc)\n"), out);
 	fputs(_(" -i, --ipc[=<file>]        unshare System V IPC namespace\n"), out);
 	fputs(_(" -n, --net[=<file>]        unshare network namespace\n"), out);
+	fputs(_(" --afnet[=<file>]          unshare address family namespace\n"), out);
 	fputs(_(" -p, --pid[=<file>]        unshare pid namespace\n"), out);
 	fputs(_(" -U, --user[=<file>]       unshare user namespace\n"), out);
 	fputs(_(" -C, --cgroup[=<file>]     unshare cgroup namespace\n"), out);
@@ -277,7 +279,8 @@ int main(int argc, char *argv[])
 	enum {
 		OPT_MOUNTPROC = CHAR_MAX + 1,
 		OPT_PROPAGATION,
-		OPT_SETGROUPS
+		OPT_SETGROUPS,
+		OPT_AFNET,
 	};
 	static const struct option longopts[] = {
 		{ "help",          no_argument,       NULL, 'h'             },
@@ -287,6 +290,7 @@ int main(int argc, char *argv[])
 		{ "uts",           optional_argument, NULL, 'u'             },
 		{ "ipc",           optional_argument, NULL, 'i'             },
 		{ "net",           optional_argument, NULL, 'n'             },
+		{ "afnet",         optional_argument, NULL, OPT_AFNET       },
 		{ "pid",           optional_argument, NULL, 'p'             },
 		{ "user",          optional_argument, NULL, 'U'             },
 		{ "cgroup",        optional_argument, NULL, 'C'             },
@@ -344,6 +348,11 @@ int main(int argc, char *argv[])
 			unshare_flags |= CLONE_NEWNET;
 			if (optarg)
 				set_ns_target(CLONE_NEWNET, optarg);
+			break;
+		case OPT_AFNET:
+			unshare_flags |= CLONE_NEWAFNET;
+			if (optarg)
+				set_ns_target(CLONE_NEWAFNET, optarg);
 			break;
 		case 'p':
 			unshare_flags |= CLONE_NEWPID;
