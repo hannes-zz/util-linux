@@ -25,6 +25,9 @@
 # ifndef CLONE_NEWPID
 #  define CLONE_NEWPID 0x20000000
 # endif
+# ifndef CLONE_NEWAFNET
+#  define CLONE_NEWAFNET 0x00001000
+# endif
 
 # if !defined(HAVE_UNSHARE) || !defined(HAVE_SETNS)
 #  include <sys/syscall.h>
